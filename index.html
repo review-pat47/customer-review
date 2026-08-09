@@ -1,108 +1,102 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="firebase-version" content="3">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="firebase-version" content="5">
+
 <title>Customer Reviews</title>
 
 <style>
-:root{
-  --pink:#ef2858;
-  --yellow:#f5b900;
-  --text:#202124;
-  --line:#eee;
+*{
+  box-sizing:border-box;
 }
-
-*{box-sizing:border-box}
 
 body{
   margin:0;
   background:#fff;
+  color:#202124;
   font-family:Arial,Helvetica,sans-serif;
-  color:var(--text);
 }
 
 .page{
   max-width:760px;
   margin:auto;
-  padding:0 22px 105px;
+  padding:0 20px 110px;
 }
 
 .telegram{
   margin:18px 0 24px;
-  border-radius:16px;
+  padding:15px;
+  text-align:center;
   background:#f1f9ff;
   border:1px solid #d7ecfa;
-  padding:15px 18px;
-  text-align:center;
+  border-radius:16px;
 }
 
 .telegram small{
   display:block;
   color:#777;
-  font-size:13px;
-  margin-bottom:4px;
+  margin-bottom:5px;
 }
 
 .telegram a{
-  font-size:21px;
-  font-weight:800;
   color:#1687d9;
+  font-size:21px;
+  font-weight:bold;
   text-decoration:none;
 }
 
 .summary{
-  padding:8px 0 28px;
   text-align:center;
+  padding:10px 0 25px;
 }
 
 .score{
   font-size:68px;
-  line-height:1;
   font-weight:800;
 }
 
-.summary .stars{
-  font-size:27px;
-  margin:10px 0 3px;
+.stars{
+  color:#f5b900;
+  font-size:26px;
+  letter-spacing:1px;
+  margin:10px 0;
 }
 
 .count{
-  font-size:22px;
   color:#777;
+  font-size:21px;
 }
 
 .bars{
   max-width:620px;
-  margin:30px auto 8px;
+  margin:28px auto;
 }
 
 .row{
   display:flex;
   align-items:center;
-  gap:12px;
-  margin:12px 0;
+  gap:10px;
+  margin:11px 0;
 }
 
 .label{
-  width:25px;
+  width:30px;
   text-align:right;
-  font-size:17px;
 }
 
 .track{
-  height:14px;
+  flex:1;
+  height:13px;
   background:#ddd;
   border-radius:20px;
   overflow:hidden;
-  flex:1;
 }
 
 .fill{
   height:100%;
   background:#f5b900;
-  border-radius:20px;
 }
 
 .p72{width:72%}
@@ -113,8 +107,8 @@ body{
 
 .review{
   position:relative;
-  padding:24px 0;
-  border-bottom:1px solid var(--line);
+  padding:23px 0;
+  border-bottom:1px solid #eee;
 }
 
 .person{
@@ -126,23 +120,22 @@ body{
 .avatar{
   width:64px;
   height:64px;
+  flex:none;
   border-radius:50%;
   overflow:hidden;
   background:#dfe7ed;
   display:flex;
   align-items:center;
   justify-content:center;
-  flex:none;
-  font-size:25px;
-  font-weight:800;
-  color:#46535d;
+  font-size:24px;
+  font-weight:bold;
+  color:#59656d;
 }
 
 .avatar img{
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
 }
 
 .name{
@@ -150,18 +143,11 @@ body{
   font-weight:800;
 }
 
-.stars{
-  color:var(--yellow);
-  font-size:26px;
-  letter-spacing:1px;
-  margin:12px 0 8px;
-}
-
-.review p{
-  font-size:20px;
-  line-height:1.48;
+.review-text{
   margin:0;
   color:#2d2d2d;
+  font-size:20px;
+  line-height:1.5;
   white-space:pre-wrap;
   overflow-wrap:anywhere;
 }
@@ -171,29 +157,16 @@ body{
   position:absolute;
   right:0;
   top:24px;
-  background:#eee;
   border:0;
-  border-radius:18px;
-  padding:7px 12px;
-  cursor:pointer;
+  border-radius:20px;
+  padding:8px 13px;
   color:#b00020;
-  font-weight:700;
+  background:#eee;
+  font-weight:bold;
 }
 
 .admin-mode .delete{
   display:block;
-}
-
-.admin{
-  position:fixed;
-  right:16px;
-  bottom:92px;
-  border:0;
-  background:#222;
-  color:#fff;
-  border-radius:24px;
-  padding:10px 14px;
-  cursor:pointer;
 }
 
 .add{
@@ -201,16 +174,26 @@ body{
   left:50%;
   bottom:16px;
   transform:translateX(-50%);
-  width:min(710px,calc(100% - 44px));
-  background:var(--pink);
-  color:#fff;
-  border-radius:36px;
-  padding:17px 20px;
-  font-size:23px;
-  font-weight:800;
-  text-align:center;
-  box-shadow:0 7px 22px rgba(239,40,88,.25);
-  border:none;
+  width:min(710px,calc(100% - 40px));
+  padding:17px;
+  border:0;
+  border-radius:35px;
+  background:#ef2858;
+  color:white;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.admin{
+  position:fixed;
+  right:15px;
+  bottom:90px;
+  border:0;
+  border-radius:25px;
+  padding:10px 15px;
+  background:#222;
+  color:white;
   cursor:pointer;
 }
 
@@ -218,28 +201,25 @@ body{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
-  justify-content:center;
-  align-items:center;
   z-index:1000;
   padding:20px;
+  background:rgba(0,0,0,.6);
+  align-items:center;
+  justify-content:center;
 }
 
 .modal{
-  background:#fff;
-  border-radius:20px;
-  padding:24px;
   width:100%;
   max-width:500px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
   max-height:90vh;
   overflow:auto;
+  padding:24px;
+  background:white;
+  border-radius:20px;
 }
 
 .modal h2{
   margin-top:0;
-  font-size:24px;
-  margin-bottom:16px;
 }
 
 .form-group{
@@ -250,7 +230,6 @@ body{
   display:block;
   margin-bottom:6px;
   font-weight:bold;
-  font-size:16px;
 }
 
 .form-group input,
@@ -258,86 +237,75 @@ body{
 .form-group textarea{
   width:100%;
   padding:12px;
-  font-size:16px;
   border:1px solid #ccc;
   border-radius:8px;
+  font-size:16px;
   font-family:inherit;
 }
 
 .form-group textarea{
+  height:110px;
   resize:vertical;
-  height:100px;
 }
 
 .modal-actions{
   display:flex;
-  gap:10px;
   justify-content:flex-end;
+  gap:10px;
 }
 
 .btn{
-  padding:12px 20px;
+  border:0;
   border-radius:24px;
+  padding:12px 20px;
   font-size:16px;
   font-weight:bold;
-  border:none;
   cursor:pointer;
 }
 
 .btn-submit{
-  background:var(--pink);
-  color:#fff;
-}
-
-.btn-submit:disabled{
-  opacity:.6;
-  cursor:not-allowed;
+  background:#ef2858;
+  color:white;
 }
 
 .btn-cancel{
   background:#e0e0e0;
-  color:#333;
 }
 
 .status{
   display:none;
-  margin-bottom:14px;
   padding:11px;
+  margin-bottom:15px;
   border-radius:10px;
   font-size:14px;
-  line-height:1.4;
 }
 
 .loading{
-  padding:25px 0;
+  padding:30px 0;
   text-align:center;
   color:#777;
-  font-size:17px;
 }
 
 .error{
-  padding:20px 0;
-  color:#b00020;
+  padding:25px 0;
   text-align:center;
+  color:#b00020;
 }
 
 @media(max-width:500px){
-  .page{
-    padding-left:20px;
-    padding-right:20px;
-  }
 
   .score{
-    font-size:62px;
-  }
-
-  .review p{
-    font-size:19px;
+    font-size:60px;
   }
 
   .name{
     font-size:22px;
   }
+
+  .review-text{
+    font-size:19px;
+  }
+
 }
 </style>
 </head>
@@ -346,237 +314,282 @@ body{
 
 <main class="page">
 
-<div class="telegram">
-<small>Telegram ID</small>
-<a href="https://t.me/GAYATHRI_REDDY1" target="_blank" rel="noopener">
-@GAYATHRI_REDDY1
-</a>
-</div>
-
-<section class="summary">
-
-<div class="score">4.6</div>
-
-<div class="stars">★★★★★</div>
-
-<div class="count" id="reviewCount">
-(2,529 reviews)
-</div>
-
-<div class="bars">
-
-<div class="row">
-<span class="label">5 ★</span>
-<div class="track">
-<div class="fill p72"></div>
-</div>
-</div>
-
-<div class="row">
-<span class="label">4 ★</span>
-<div class="track">
-<div class="fill p17"></div>
-</div>
-</div>
-
-<div class="row">
-<span class="label">3 ★</span>
-<div class="track">
-<div class="fill p6"></div>
-</div>
-</div>
-
-<div class="row">
-<span class="label">2 ★</span>
-<div class="track">
-<div class="fill p3"></div>
-</div>
-</div>
-
-<div class="row">
-<span class="label">1 ★</span>
-<div class="track">
-<div class="fill p2"></div>
-</div>
-</div>
-
-</div>
-</section>
+  <div class="telegram">
+    <small>Telegram ID</small>
+    <a
+      href="https://t.me/GAYATHRI_REDDY1"
+      target="_blank"
+      rel="noopener">
+      @GAYATHRI_REDDY1
+    </a>
+  </div>
 
 
-<div id="reviews-container">
+  <section class="summary">
 
-<div class="loading">
-Reviews loading...
-</div>
+    <div class="score">4.6</div>
 
-</div>
+    <div class="stars">★★★★★</div>
+
+    <div
+      class="count"
+      id="reviewCount">
+      (2,529 reviews)
+    </div>
+
+
+    <div class="bars">
+
+      <div class="row">
+        <span class="label">5 ★</span>
+        <div class="track">
+          <div class="fill p72"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">4 ★</span>
+        <div class="track">
+          <div class="fill p17"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">3 ★</span>
+        <div class="track">
+          <div class="fill p6"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">2 ★</span>
+        <div class="track">
+          <div class="fill p3"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">1 ★</span>
+        <div class="track">
+          <div class="fill p2"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <div id="reviews-container">
+
+    <div class="loading">
+      Reviews loading...
+    </div>
+
+  </div>
 
 </main>
 
 
-<button class="add" onclick="openModal()">
-＋ Add Your Review
+<button
+  class="add"
+  onclick="openModal()">
+  ＋ Add Your Review
 </button>
 
-<button class="admin" onclick="adminLogin()">
-Admin Login
-</button>
-
-
-<div class="modal-overlay" id="reviewModal">
-
-<div class="modal">
-
-<h2>Write a Review</h2>
-
-<div id="status" class="status"></div>
-
-<form id="reviewForm">
-
-<div class="form-group">
-<label for="userName">Your Name</label>
-
-<input
-type="text"
-id="userName"
-required
-maxlength="50"
-placeholder="Enter your name">
-</div>
-
-
-<div class="form-group">
-<label for="userRating">Rating</label>
-
-<select id="userRating" required>
-
-<option value="5">★★★★★ (5 Stars)</option>
-<option value="4">★★★★☆ (4 Stars)</option>
-<option value="3">★★★☆☆ (3 Stars)</option>
-<option value="2">★★☆☆☆ (2 Stars)</option>
-<option value="1">★☆☆☆☆ (1 Star)</option>
-
-</select>
-</div>
-
-
-<div class="form-group">
-
-<label for="userPhoto">
-Profile Photo
-</label>
-
-<input
-type="file"
-id="userPhoto"
-accept="image/*">
-
-</div>
-
-
-<div class="form-group">
-
-<label for="userComment">
-Your Review
-</label>
-
-<textarea
-id="userComment"
-required
-maxlength="500"
-placeholder="Write your feedback here..."></textarea>
-
-</div>
-
-
-<div class="modal-actions">
 
 <button
-type="button"
-class="btn btn-cancel"
-onclick="closeModal()">
-Cancel
+  class="admin"
+  onclick="adminLogin()">
+  Admin Login
 </button>
 
-<button
-type="submit"
-id="submitButton"
-class="btn btn-submit">
-Submit
-</button>
 
-</div>
+<div
+  class="modal-overlay"
+  id="reviewModal">
 
-</form>
+  <div class="modal">
 
-</div>
+    <h2>Write a Review</h2>
+
+    <div
+      id="status"
+      class="status">
+    </div>
+
+
+    <form id="reviewForm">
+
+      <div class="form-group">
+
+        <label for="userName">
+          Your Name
+        </label>
+
+        <input
+          id="userName"
+          type="text"
+          maxlength="50"
+          placeholder="Enter your name"
+          required>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="userRating">
+          Rating
+        </label>
+
+        <select
+          id="userRating"
+          required>
+
+          <option value="5">
+            ★★★★★ (5 Stars)
+          </option>
+
+          <option value="4">
+            ★★★★☆ (4 Stars)
+          </option>
+
+          <option value="3">
+            ★★★☆☆ (3 Stars)
+          </option>
+
+          <option value="2">
+            ★★☆☆☆ (2 Stars)
+          </option>
+
+          <option value="1">
+            ★☆☆☆☆ (1 Star)
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="userPhoto">
+          Profile Photo
+        </label>
+
+        <input
+          id="userPhoto"
+          type="file"
+          accept="image/*">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="userComment">
+          Your Review
+        </label>
+
+        <textarea
+          id="userComment"
+          maxlength="500"
+          placeholder="Write your feedback here..."
+          required></textarea>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn btn-cancel"
+          onclick="closeModal()">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-submit"
+          id="submitButton">
+          Submit
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
 </div>
 
 
 <script type="module">
 
 import {
-initializeApp
-}
-from
+  initializeApp
+} from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 
 import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot,
-deleteDoc,
-doc,
-serverTimestamp
-}
-from
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  serverTimestamp
+} from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 import {
-getAuth,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
-}
-from
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
+/* Firebase Configuration */
+
 const firebaseConfig = {
 
-apiKey:
-"AIzaSyDyNMpN3p-vo4-byi9AEklM97A3DzugBRs",
+  apiKey:
+  "AIzaSyDyNMpN3p-vo4-byi9AEklM97A3DzugBRs",
 
-authDomain:
-"my-review-77576.firebaseapp.com",
+  authDomain:
+  "my-review-77576.firebaseapp.com",
 
-projectId:
-"my-review-77576",
+  projectId:
+  "my-review-77576",
 
-storageBucket:
-"my-review-77576.firebasestorage.app",
+  storageBucket:
+  "my-review-77576.firebasestorage.app",
 
-messagingSenderId:
-"551174640361",
+  messagingSenderId:
+  "551174640361",
 
-appId:
-"1:551174640361:web:9dc2c45bbc8a4b990fd678",
+  appId:
+  "1:551174640361:web:9dc2c45bbc8a4b990fd678",
 
-measurementId:
-"G-FRVD05XZ41"
+  measurementId:
+  "G-FRVD05XZ41"
 
 };
 
 
-/* आपका Admin Gmail */
+/* Admin Gmail */
 
 const ADMIN_EMAIL =
 "gayatrireddy3434@gmail.com";
 
+
+/* Firebase start */
 
 const app =
 initializeApp(firebaseConfig);
@@ -593,80 +606,16 @@ collection(db,"reviews");
 let adminMode=false;
 
 
-/* Popup खोलना */
-
-function openModal(){
-
-document.getElementById(
-"reviewModal"
-).style.display="flex";
-
-}
-
-window.openModal=openModal;
-
-
-/* Popup बंद करना */
-
-function closeModal(){
-
-document.getElementById(
-"reviewModal"
-).style.display="none";
-
-document.getElementById(
-"reviewForm"
-).reset();
-
-document.getElementById(
-"status"
-).style.display="none";
-
-}
-
-window.closeModal=closeModal;
-
-
-/* Message */
-
-function showStatus(
-message,
-success
-){
-
-const status=
-document.getElementById(
-"status"
-);
-
-status.textContent=message;
-
-status.style.display="block";
-
-if(success){
-
-status.style.background="#e8f5e9";
-status.style.color="#1b5e20";
-
-}else{
-
-status.style.background="#ffebee";
-status.style.color="#b71c1c";
-
-}
-
-}
-
-
 /* Default avatar */
 
-const avatarSvg =
+const defaultAvatar =
 "data:image/svg+xml;charset=UTF-8," +
 encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg"
 viewBox="0 0 100 100">
 
-<rect width="100"
+<rect
+width="100"
 height="100"
 rx="50"
 fill="#dfe7ed"/>
@@ -685,609 +634,657 @@ fill="#7b8790"/>
 `);
 
 
-/* Review बनाना */
+/* Open modal */
 
-function reviewElement(
-id,
-data
+window.openModal=function(){
+
+  document.getElementById(
+    "reviewModal"
+  ).style.display="flex";
+
+};
+
+
+/* Close modal */
+
+window.closeModal=function(){
+
+  document.getElementById(
+    "reviewModal"
+  ).style.display="none";
+
+  document.getElementById(
+    "reviewForm"
+  ).reset();
+
+  document.getElementById(
+    "status"
+  ).style.display="none";
+
+};
+
+
+/* Status */
+
+function statusMessage(
+  message,
+  success
 ){
 
-const article=
-document.createElement("article");
+  const box =
+  document.getElementById("status");
 
-article.className="review";
+  box.textContent=message;
 
+  box.style.display="block";
 
-const person=
-document.createElement("div");
+  if(success){
 
-person.className="person";
+    box.style.background="#e8f5e9";
+    box.style.color="#1b5e20";
 
+  }else{
 
-const avatar=
-document.createElement("div");
+    box.style.background="#ffebee";
+    box.style.color="#b71c1c";
 
-avatar.className="avatar";
+  }
 
-
-const image=
-document.createElement("img");
-
-image.src=
-data.photo ||
-avatarSvg;
-
-image.alt="Profile photo";
+}
 
 
-avatar.appendChild(image);
+/* Make review HTML */
+
+function createReview(
+  id,
+  data
+){
+
+  const article =
+  document.createElement("article");
+
+  article.className="review";
 
 
-const name=
-document.createElement("div");
+  const person =
+  document.createElement("div");
 
-name.className="name";
-
-name.textContent=
-data.name ||
-"Anonymous";
+  person.className="person";
 
 
-person.appendChild(avatar);
+  const avatar =
+  document.createElement("div");
 
-person.appendChild(name);
-
-
-const stars=
-document.createElement("div");
-
-stars.className="stars";
+  avatar.className="avatar";
 
 
-const starMap={
+  const image =
+  document.createElement("img");
 
-1:"★☆☆☆☆",
-2:"★★☆☆☆",
-3:"★★★☆☆",
-4:"★★★★☆",
-5:"★★★★★"
+  image.src =
+  data.photo || defaultAvatar;
 
-};
+  image.alt="Profile photo";
 
 
-stars.textContent=
-starMap[
-Number(data.rating)
-] || "★★★★★";
+  avatar.appendChild(image);
 
 
-const comment=
-document.createElement("p");
+  const name =
+  document.createElement("div");
 
-comment.textContent=
-data.comment || "";
+  name.className="name";
 
-
-const deleteButton=
-document.createElement("button");
-
-deleteButton.className="delete";
-
-deleteButton.textContent="Delete";
-
-deleteButton.onclick=
-()=>{
-removeReview(id);
-};
+  name.textContent =
+  data.name || "Anonymous";
 
 
-article.appendChild(person);
-
-article.appendChild(stars);
-
-article.appendChild(comment);
-
-article.appendChild(deleteButton);
+  person.appendChild(avatar);
+  person.appendChild(name);
 
 
-return article;
+  const stars =
+  document.createElement("div");
+
+  stars.className="stars";
+
+
+  const rating =
+  Number(data.rating) || 5;
+
+
+  const starsList = [
+    "",
+    "★☆☆☆☆",
+    "★★☆☆☆",
+    "★★★☆☆",
+    "★★★★☆",
+    "★★★★★"
+  ];
+
+
+  stars.textContent =
+  starsList[rating] || "★★★★★";
+
+
+  const text =
+  document.createElement("p");
+
+  text.className="review-text";
+
+  text.textContent =
+  data.comment || "";
+
+
+  const deleteButton =
+  document.createElement("button");
+
+  deleteButton.className="delete";
+
+  deleteButton.textContent="Delete";
+
+  deleteButton.onclick =
+  function(){
+
+    deleteReview(id);
+
+  };
+
+
+  article.appendChild(person);
+  article.appendChild(stars);
+  article.appendChild(text);
+  article.appendChild(deleteButton);
+
+
+  return article;
 
 }
 
 
 /*
-Firebase से सभी reviews पढ़ना।
-
-यहाँ orderBy() नहीं लगाया गया है।
-इसलिए जिन पुराने reviews में
-createdAt नहीं है, वे भी आएंगे।
+IMPORTANT:
+यह getDocs() इस्तेमाल करता है।
+इससे page खुलते ही Firestore की
+पूरी reviews collection पढ़ी जाएगी।
+orderBy() नहीं है।
 */
 
-onSnapshot(
+async function loadReviews(){
 
-reviewsRef,
-
-(snapshot)=>{
-
-const box=
-document.getElementById(
-"reviews-container"
-);
-
-box.innerHTML="";
+  const container =
+  document.getElementById(
+    "reviews-container"
+  );
 
 
-if(snapshot.empty){
+  try{
 
-box.innerHTML=
-'<div class="loading"> अभी कोई नया review नहीं है। </div>';
+    container.innerHTML =
+    '<div class="loading">Reviews loading...</div>';
 
-document.getElementById(
-"reviewCount"
-).textContent=
-"(2,529 reviews)";
 
-return;
+    const snapshot =
+    await getDocs(reviewsRef);
+
+
+    container.innerHTML="";
+
+
+    if(snapshot.empty){
+
+      container.innerHTML =
+      '<div class="loading">No reviews found.</div>';
+
+      return;
+
+    }
+
+
+    const reviews=[];
+
+
+    snapshot.forEach(
+      function(item){
+
+        reviews.push({
+
+          id:item.id,
+
+          data:item.data()
+
+        });
+
+      }
+    );
+
+
+    /*
+    अगर createdAt है तो नए review ऊपर।
+    पुराने review जिनमें createdAt
+    नहीं है, वे भी दिखेंगे।
+    */
+
+    reviews.sort(
+      function(a,b){
+
+        const aTime =
+        a.data.createdAt &&
+        typeof a.data.createdAt.toMillis ===
+        "function"
+        ?
+        a.data.createdAt.toMillis()
+        :
+        0;
+
+
+        const bTime =
+        b.data.createdAt &&
+        typeof b.data.createdAt.toMillis ===
+        "function"
+        ?
+        b.data.createdAt.toMillis()
+        :
+        0;
+
+
+        return bTime-aTime;
+
+      }
+    );
+
+
+    reviews.forEach(
+      function(item){
+
+        container.appendChild(
+          createReview(
+            item.id,
+            item.data
+          )
+        );
+
+      }
+    );
+
+
+    document.getElementById(
+      "reviewCount"
+    ).textContent =
+    "(" +
+    (
+      2529 + reviews.length
+    ).toLocaleString() +
+    " reviews)";
+
+
+  }catch(error){
+
+    console.error(
+      "Firestore error:",
+      error
+    );
+
+
+    container.innerHTML =
+    `
+    <div class="error">
+      Reviews load nahi ho rahe.<br><br>
+      Firebase connection error.
+    </div>
+    `;
+
+  }
 
 }
 
 
-/*
-सभी Firebase reviews को
-एक साथ display करना
-*/
+/* Page load होते ही reviews */
 
-const allReviews=[];
-
-
-snapshot.forEach(
-(item)=>{
-
-allReviews.push({
-id:item.id,
-data:item.data()
-});
-
-});
-
-
-/*
-अगर createdAt उपलब्ध है तो
-नए reviews ऊपर आएंगे।
-अगर नहीं है तो भी review
-नहीं छूटेगा।
-*/
-
-allReviews.sort(
-(a,b)=>{
-
-const aTime=
-a.data.createdAt &&
-typeof a.data.createdAt.toMillis ===
-"function"
-?
-a.data.createdAt.toMillis()
-:
-0;
-
-const bTime=
-b.data.createdAt &&
-typeof b.data.createdAt.toMillis ===
-"function"
-?
-b.data.createdAt.toMillis()
-:
-0;
-
-return bTime-aTime;
-
-}
-);
-
-
-/* सभी reviews दिखाना */
-
-allReviews.forEach(
-(item)=>{
-
-box.appendChild(
-reviewElement(
-item.id,
-item.data
-)
-);
-
-});
-
-
-document.getElementById(
-"reviewCount"
-).textContent=
-`(${(
-2529 + allReviews.length
-).toLocaleString()} reviews)`;
-
-
-document.body.classList.toggle(
-"admin-mode",
-adminMode
-);
-
-},
-
-(error)=>{
-
-console.error(
-"Firebase read error:",
-error
-);
-
-
-document.getElementById(
-"reviews-container"
-).innerHTML=
-`
-<div class="error">
-Reviews load nahi ho rahe.<br>
-Firestore Rules check karein.
-</div>
-`;
-
-}
-
-);
+loadReviews();
 
 
 /* Review submit */
 
-document
-.getElementById("reviewForm")
-.addEventListener(
-"submit",
-async(event)=>{
-
-event.preventDefault();
-
-
-const submitButton=
 document.getElementById(
-"submitButton"
+  "reviewForm"
+).addEventListener(
+  "submit",
+  async function(event){
+
+    event.preventDefault();
+
+
+    const button =
+    document.getElementById(
+      "submitButton"
+    );
+
+
+    button.disabled=true;
+
+    button.textContent=
+    "Saving...";
+
+
+    try{
+
+      const name =
+      document.getElementById(
+        "userName"
+      ).value.trim();
+
+
+      const rating =
+      Number(
+        document.getElementById(
+          "userRating"
+        ).value
+      );
+
+
+      const comment =
+      document.getElementById(
+        "userComment"
+      ).value.trim();
+
+
+      const photoInput =
+      document.getElementById(
+        "userPhoto"
+      );
+
+
+      const file =
+      photoInput.files &&
+      photoInput.files.length
+      ?
+      photoInput.files[0]
+      :
+      null;
+
+
+      let photo="";
+
+
+      if(file){
+
+        if(
+          file.size >
+          500 * 1024
+        ){
+
+          statusMessage(
+            "Photo 500 KB se chhoti rakhein.",
+            false
+          );
+
+          button.disabled=false;
+
+          button.textContent="Submit";
+
+          return;
+
+        }
+
+
+        photo =
+        await new Promise(
+          function(resolve,reject){
+
+            const reader =
+            new FileReader();
+
+
+            reader.onload =
+            function(){
+
+              resolve(
+                reader.result
+              );
+
+            };
+
+
+            reader.onerror =
+            function(){
+
+              reject(
+                reader.error
+              );
+
+            };
+
+
+            reader.readAsDataURL(
+              file
+            );
+
+          }
+        );
+
+      }
+
+
+      await addDoc(
+        reviewsRef,
+        {
+
+          name:name,
+
+          rating:rating,
+
+          comment:comment,
+
+          photo:photo,
+
+          createdAt:
+          serverTimestamp()
+
+        }
+      );
+
+
+      statusMessage(
+        "Review successfully add ho gaya!",
+        true
+      );
+
+
+      await loadReviews();
+
+
+      setTimeout(
+        function(){
+
+          closeModal();
+
+        },
+        700
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "Save error:",
+        error
+      );
+
+
+      statusMessage(
+        "Review save nahi hua: " +
+        error.message,
+        false
+      );
+
+    }
+
+
+    button.disabled=false;
+
+    button.textContent="Submit";
+
+  }
 );
 
 
-submitButton.disabled=true;
+/* Delete review */
 
-submitButton.textContent=
-"Saving...";
+async function deleteReview(id){
 
+  if(
+    !auth.currentUser ||
+    auth.currentUser.email !==
+    ADMIN_EMAIL
+  ){
 
-try{
+    alert(
+      "Admin login required."
+    );
 
-const name=
-document.getElementById(
-"userName"
-).value.trim();
+    return;
 
-
-const rating=
-Number(
-document.getElementById(
-"userRating"
-).value
-);
+  }
 
 
-const comment=
-document.getElementById(
-"userComment"
-).value.trim();
+  const ok =
+  confirm(
+    "Delete this review?"
+  );
 
 
-const photoInput=
-document.getElementById(
-"userPhoto"
-);
+  if(!ok)return;
 
 
-const file=
-photoInput.files &&
-photoInput.files.length
-?
-photoInput.files[0]
-:
-null;
+  try{
+
+    await deleteDoc(
+      doc(
+        db,
+        "reviews",
+        id
+      )
+    );
 
 
-if(!name || !comment){
+    await loadReviews();
 
-showStatus(
-"Name aur review bharna zaroori hai.",
-false
-);
 
-submitButton.disabled=false;
+  }catch(error){
 
-submitButton.textContent=
-"Submit";
+    console.error(
+      "Delete error:",
+      error
+    );
 
-return;
+
+    alert(
+      "Delete nahi hua. Firebase Rules check karein."
+    );
+
+  }
 
 }
-
-
-let photo="";
-
-
-if(file){
-
-if(file.size >
-500*1024){
-
-showStatus(
-"Photo 500 KB se chhoti rakhein.",
-false
-);
-
-submitButton.disabled=false;
-
-submitButton.textContent=
-"Submit";
-
-return;
-
-}
-
-
-photo=
-await new Promise(
-(resolve,reject)=>{
-
-const reader=
-new FileReader();
-
-reader.onload=
-()=>{
-resolve(
-reader.result
-);
-};
-
-reader.onerror=
-()=>{
-reject(
-reader.error
-);
-};
-
-reader.readAsDataURL(
-file
-);
-
-}
-);
-
-}
-
-
-/* Firebase में save */
-
-await addDoc(
-reviewsRef,
-{
-
-name:name,
-
-rating:rating,
-
-comment:comment,
-
-photo:photo,
-
-createdAt:
-serverTimestamp()
-
-}
-);
-
-
-showStatus(
-"Review successfully add ho gaya!",
-true
-);
-
-
-/*
-onSnapshot खुद नया review
-screen पर दिखा देगा।
-*/
-
-setTimeout(
-()=>{
-closeModal();
-},
-800
-);
-
-
-}catch(error){
-
-console.error(
-"Review save error:",
-error
-);
-
-
-showStatus(
-"Review save nahi hua: " +
-error.message,
-false
-);
-
-}
-
-
-submitButton.disabled=false;
-
-submitButton.textContent=
-"Submit";
-
-}
-);
-
-
-/* Review delete */
-
-async function removeReview(id){
-
-if(
-!auth.currentUser ||
-auth.currentUser.email !==
-ADMIN_EMAIL
-){
-
-alert(
-"Admin login required."
-);
-
-return;
-
-}
-
-
-if(
-!confirm(
-"Delete this review?"
-)
-){
-
-return;
-
-}
-
-
-try{
-
-await deleteDoc(
-doc(db,"reviews",id)
-);
-
-}catch(error){
-
-console.error(
-"Delete error:",
-error
-);
-
-alert(
-"Delete nahi hua. Firebase Rules check karein."
-);
-
-}
-
-}
-
-window.removeReview=
-removeReview;
-
-
-/* Admin login state */
-
-onAuthStateChanged(
-auth,
-(user)=>{
-
-adminMode=
-!!user &&
-user.email ===
-ADMIN_EMAIL;
-
-
-document.body.classList.toggle(
-"admin-mode",
-adminMode
-);
-
-}
-);
 
 
 /* Admin login */
 
-async function adminLogin(){
+window.adminLogin =
+async function(){
 
-const email=
-prompt(
-"Admin Gmail:"
+  const email =
+  prompt(
+    "Admin Gmail:"
+  );
+
+
+  if(!email)return;
+
+
+  const password =
+  prompt(
+    "Admin Password:"
+  );
+
+
+  if(!password)return;
+
+
+  try{
+
+    const result =
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+
+    if(
+      result.user.email !==
+      ADMIN_EMAIL
+    ){
+
+      await signOut(auth);
+
+      alert(
+        "Ye authorized admin Gmail nahi hai."
+      );
+
+      return;
+
+    }
+
+
+    adminMode=true;
+
+    document.body.classList.add(
+      "admin-mode"
+    );
+
+
+    alert(
+      "Admin login successful."
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Login error:",
+      error
+    );
+
+
+    alert(
+      "Admin login failed. Gmail ya password check karein."
+    );
+
+  }
+
+};
+
+
+/* Auth state */
+
+onAuthStateChanged(
+  auth,
+  function(user){
+
+    adminMode =
+    !!user &&
+    user.email ===
+    ADMIN_EMAIL;
+
+
+    document.body.classList.toggle(
+      "admin-mode",
+      adminMode
+    );
+
+  }
 );
-
-if(!email)return;
-
-
-const password=
-prompt(
-"Admin Password:"
-);
-
-if(!password)return;
-
-
-try{
-
-const credential=
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-
-if(
-credential.user.email !==
-ADMIN_EMAIL
-){
-
-await signOut(auth);
-
-alert(
-"Ye Gmail authorized admin nahi hai."
-);
-
-return;
-
-}
-
-
-adminMode=true;
-
-
-document.body.classList.add(
-"admin-mode"
-);
-
-
-alert(
-"Admin login successful."
-);
-
-
-}catch(error){
-
-console.error(
-"Admin login error:",
-error
-);
-
-
-alert(
-"Admin login failed. Gmail ya password check karein."
-);
-
-}
-
-}
-
-window.adminLogin=
-adminLogin;
 
 </script>
 
