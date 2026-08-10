@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="firebase-version" content="5">
+<meta name="firebase-version" content="6">
 
 <title>Customer Reviews</title>
 
@@ -57,10 +57,9 @@ body{
   font-weight:800;
 }
 
-.stars{
+.summary-stars{
   color:#f5b900;
-  font-size:26px;
-  letter-spacing:1px;
+  font-size:27px;
   margin:10px 0;
 }
 
@@ -136,11 +135,19 @@ body{
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 
 .name{
   font-size:24px;
   font-weight:800;
+}
+
+.review-stars{
+  color:#f5b900;
+  font-size:26px;
+  letter-spacing:1px;
+  margin:12px 0 8px;
 }
 
 .review-text{
@@ -163,6 +170,7 @@ body{
   color:#b00020;
   background:#eee;
   font-weight:bold;
+  cursor:pointer;
 }
 
 .admin-mode .delete{
@@ -183,6 +191,7 @@ body{
   font-size:22px;
   font-weight:bold;
   cursor:pointer;
+  box-shadow:0 7px 22px rgba(239,40,88,.25);
 }
 
 .admin{
@@ -195,6 +204,27 @@ body{
   background:#222;
   color:white;
   cursor:pointer;
+}
+
+.logout{
+  display:none;
+  position:fixed;
+  right:15px;
+  bottom:140px;
+  border:0;
+  border-radius:25px;
+  padding:10px 15px;
+  background:#b00020;
+  color:white;
+  cursor:pointer;
+}
+
+.admin-mode .logout{
+  display:block;
+}
+
+.admin-mode .admin{
+  background:#1687d9;
 }
 
 .modal-overlay{
@@ -268,6 +298,11 @@ body{
   color:white;
 }
 
+.btn-submit:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
 .btn-cancel{
   background:#e0e0e0;
 }
@@ -278,18 +313,27 @@ body{
   margin-bottom:15px;
   border-radius:10px;
   font-size:14px;
+  line-height:1.4;
 }
 
 .loading{
   padding:30px 0;
   text-align:center;
   color:#777;
+  font-size:17px;
 }
 
 .error{
   padding:25px 0;
   text-align:center;
   color:#b00020;
+  line-height:1.5;
+}
+
+.empty{
+  padding:25px 0;
+  text-align:center;
+  color:#777;
 }
 
 @media(max-width:500px){
@@ -316,6 +360,7 @@ body{
 
   <div class="telegram">
     <small>Telegram ID</small>
+
     <a
       href="https://t.me/GAYATHRI_REDDY1"
       target="_blank"
@@ -329,7 +374,7 @@ body{
 
     <div class="score">4.6</div>
 
-    <div class="stars">★★★★★</div>
+    <div class="summary-stars">★★★★★</div>
 
     <div
       class="count"
@@ -392,16 +437,25 @@ body{
 
 
 <button
-  class="add"
-  onclick="openModal()">
-  ＋ Add Your Review
+  class="admin"
+  id="adminButton"
+  onclick="adminLogin()">
+  Admin Login
 </button>
 
 
 <button
-  class="admin"
-  onclick="adminLogin()">
-  Admin Login
+  class="logout"
+  id="logoutButton"
+  onclick="adminLogout()">
+  Admin Logout
+</button>
+
+
+<button
+  class="add"
+  onclick="openModal()">
+  ＋ Add Your Review
 </button>
 
 
@@ -537,8 +591,8 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc,
   getDocs,
+  addDoc,
   deleteDoc,
   doc,
   serverTimestamp
@@ -555,7 +609,9 @@ import {
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
-/* Firebase Configuration */
+/* =========================
+   FIREBASE CONFIG
+========================= */
 
 const firebaseConfig = {
 
@@ -583,13 +639,17 @@ const firebaseConfig = {
 };
 
 
-/* Admin Gmail */
+/* =========================
+   ADMIN EMAIL
+========================= */
 
 const ADMIN_EMAIL =
 "gayatrireddy3434@gmail.com";
 
 
-/* Firebase start */
+/* =========================
+   FIREBASE START
+========================= */
 
 const app =
 initializeApp(firebaseConfig);
@@ -606,7 +666,9 @@ collection(db,"reviews");
 let adminMode=false;
 
 
-/* Default avatar */
+/* =========================
+   DEFAULT AVATAR
+========================= */
 
 const defaultAvatar =
 "data:image/svg+xml;charset=UTF-8," +
@@ -634,7 +696,9 @@ fill="#7b8790"/>
 `);
 
 
-/* Open modal */
+/* =========================
+   OPEN MODAL
+========================= */
 
 window.openModal=function(){
 
@@ -645,7 +709,9 @@ window.openModal=function(){
 };
 
 
-/* Close modal */
+/* =========================
+   CLOSE MODAL
+========================= */
 
 window.closeModal=function(){
 
@@ -664,7 +730,9 @@ window.closeModal=function(){
 };
 
 
-/* Status */
+/* =========================
+   STATUS MESSAGE
+========================= */
 
 function statusMessage(
   message,
@@ -672,7 +740,9 @@ function statusMessage(
 ){
 
   const box =
-  document.getElementById("status");
+  document.getElementById(
+    "status"
+  );
 
   box.textContent=message;
 
@@ -693,7 +763,9 @@ function statusMessage(
 }
 
 
-/* Make review HTML */
+/* =========================
+   CREATE REVIEW ELEMENT
+========================= */
 
 function createReview(
   id,
@@ -722,7 +794,8 @@ function createReview(
   document.createElement("img");
 
   image.src =
-  data.photo || defaultAvatar;
+  data.photo ||
+  defaultAvatar;
 
   image.alt="Profile photo";
 
@@ -736,7 +809,8 @@ function createReview(
   name.className="name";
 
   name.textContent =
-  data.name || "Anonymous";
+  data.name ||
+  "Anonymous";
 
 
   person.appendChild(avatar);
@@ -746,25 +820,33 @@ function createReview(
   const stars =
   document.createElement("div");
 
-  stars.className="stars";
+  stars.className="review-stars";
 
 
   const rating =
   Number(data.rating) || 5;
 
 
-  const starsList = [
+  const starList=[
+
     "",
+
     "★☆☆☆☆",
+
     "★★☆☆☆",
+
     "★★★☆☆",
+
     "★★★★☆",
+
     "★★★★★"
+
   ];
 
 
   stars.textContent =
-  starsList[rating] || "★★★★★";
+  starList[rating] ||
+  "★★★★★";
 
 
   const text =
@@ -773,7 +855,8 @@ function createReview(
   text.className="review-text";
 
   text.textContent =
-  data.comment || "";
+  data.comment ||
+  "";
 
 
   const deleteButton =
@@ -782,6 +865,7 @@ function createReview(
   deleteButton.className="delete";
 
   deleteButton.textContent="Delete";
+
 
   deleteButton.onclick =
   function(){
@@ -792,8 +876,11 @@ function createReview(
 
 
   article.appendChild(person);
+
   article.appendChild(stars);
+
   article.appendChild(text);
+
   article.appendChild(deleteButton);
 
 
@@ -802,13 +889,9 @@ function createReview(
 }
 
 
-/*
-IMPORTANT:
-यह getDocs() इस्तेमाल करता है।
-इससे page खुलते ही Firestore की
-पूरी reviews collection पढ़ी जाएगी।
-orderBy() नहीं है।
-*/
+/* =========================
+   LOAD REVIEWS
+========================= */
 
 async function loadReviews(){
 
@@ -818,14 +901,42 @@ async function loadReviews(){
   );
 
 
+  container.innerHTML =
+  '<div class="loading">Reviews loading...</div>';
+
+
   try{
 
-    container.innerHTML =
-    '<div class="loading">Reviews loading...</div>';
-
+    /*
+      Firebase response के लिए
+      maximum 10 seconds wait.
+    */
 
     const snapshot =
-    await getDocs(reviewsRef);
+    await Promise.race([
+
+      getDocs(reviewsRef),
+
+      new Promise(
+        function(_,reject){
+
+          setTimeout(
+            function(){
+
+              reject(
+                new Error(
+                  "Firebase connection timeout"
+                )
+              );
+
+            },
+            10000
+          );
+
+        }
+      )
+
+    ]);
 
 
     container.innerHTML="";
@@ -834,7 +945,16 @@ async function loadReviews(){
     if(snapshot.empty){
 
       container.innerHTML =
-      '<div class="loading">No reviews found.</div>';
+      `
+      <div class="empty">
+        No reviews found.
+      </div>
+      `;
+
+      document.getElementById(
+        "reviewCount"
+      ).textContent=
+      "(2,529 reviews)";
 
       return;
 
@@ -860,9 +980,12 @@ async function loadReviews(){
 
 
     /*
-    अगर createdAt है तो नए review ऊपर।
-    पुराने review जिनमें createdAt
-    नहीं है, वे भी दिखेंगे।
+      जिन reviews में createdAt है
+      वे ऊपर आएंगे।
+
+      पुराने reviews जिनमें
+      createdAt नहीं है,
+      वे भी दिखेंगे।
     */
 
     reviews.sort(
@@ -894,14 +1017,20 @@ async function loadReviews(){
     );
 
 
+    /*
+      सारे reviews screen पर डालना
+    */
+
     reviews.forEach(
       function(item){
 
         container.appendChild(
+
           createReview(
             item.id,
             item.data
           )
+
         );
 
       }
@@ -911,9 +1040,11 @@ async function loadReviews(){
     document.getElementById(
       "reviewCount"
     ).textContent =
+
     "(" +
     (
-      2529 + reviews.length
+      2529 +
+      reviews.length
     ).toLocaleString() +
     " reviews)";
 
@@ -921,7 +1052,7 @@ async function loadReviews(){
   }catch(error){
 
     console.error(
-      "Firestore error:",
+      "FIREBASE ERROR:",
       error
     );
 
@@ -929,8 +1060,17 @@ async function loadReviews(){
     container.innerHTML =
     `
     <div class="error">
-      Reviews load nahi ho rahe.<br><br>
-      Firebase connection error.
+
+      Reviews load nahi ho rahe.
+
+      <br><br>
+
+      <b>${escapeHtml(error.message)}</b>
+
+      <br><br>
+
+      Firebase connection check karein.
+
     </div>
     `;
 
@@ -939,12 +1079,37 @@ async function loadReviews(){
 }
 
 
-/* Page load होते ही reviews */
+/* =========================
+   ESCAPE ERROR TEXT
+========================= */
+
+function escapeHtml(text){
+
+  return String(text)
+
+    .replaceAll("&","&amp;")
+
+    .replaceAll("<","&lt;")
+
+    .replaceAll(">","&gt;")
+
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   FIRST LOAD
+========================= */
 
 loadReviews();
 
 
-/* Review submit */
+/* =========================
+   SUBMIT REVIEW
+========================= */
 
 document.getElementById(
   "reviewForm"
@@ -1004,8 +1169,31 @@ document.getElementById(
       null;
 
 
+      if(!name){
+
+        throw new Error(
+          "Name enter karein."
+        );
+
+      }
+
+
+      if(!comment){
+
+        throw new Error(
+          "Review enter karein."
+        );
+
+      }
+
+
       let photo="";
 
+
+      /*
+        Profile photo ko Data URL में
+        save किया जा रहा है।
+      */
 
       if(file){
 
@@ -1014,16 +1202,9 @@ document.getElementById(
           500 * 1024
         ){
 
-          statusMessage(
-            "Photo 500 KB se chhoti rakhein.",
-            false
+          throw new Error(
+            "Photo 500 KB se chhoti rakhein."
           );
-
-          button.disabled=false;
-
-          button.textContent="Submit";
-
-          return;
 
         }
 
@@ -1050,7 +1231,9 @@ document.getElementById(
             function(){
 
               reject(
-                reader.error
+                new Error(
+                  "Photo read nahi ho saki."
+                )
               );
 
             };
@@ -1065,6 +1248,10 @@ document.getElementById(
 
       }
 
+
+      /*
+        Firebase Firestore में review save
+      */
 
       await addDoc(
         reviewsRef,
@@ -1091,6 +1278,10 @@ document.getElementById(
       );
 
 
+      /*
+        नया review तुरंत reload
+      */
+
       await loadReviews();
 
 
@@ -1107,13 +1298,12 @@ document.getElementById(
     }catch(error){
 
       console.error(
-        "Save error:",
+        "SAVE ERROR:",
         error
       );
 
 
       statusMessage(
-        "Review save nahi hua: " +
         error.message,
         false
       );
@@ -1129,18 +1319,38 @@ document.getElementById(
 );
 
 
-/* Delete review */
+/* =========================
+   DELETE REVIEW
+========================= */
 
 async function deleteReview(id){
 
+  /*
+    Client-side check.
+    असली security Firebase Rules
+    से होगी।
+  */
+
   if(
-    !auth.currentUser ||
+    !auth.currentUser
+  ){
+
+    alert(
+      "Admin login required."
+    );
+
+    return;
+
+  }
+
+
+  if(
     auth.currentUser.email !==
     ADMIN_EMAIL
   ){
 
     alert(
-      "Admin login required."
+      "Authorized admin only."
     );
 
     return;
@@ -1154,7 +1364,11 @@ async function deleteReview(id){
   );
 
 
-  if(!ok)return;
+  if(!ok){
+
+    return;
+
+  }
 
 
   try{
@@ -1174,7 +1388,7 @@ async function deleteReview(id){
   }catch(error){
 
     console.error(
-      "Delete error:",
+      "DELETE ERROR:",
       error
     );
 
@@ -1188,10 +1402,32 @@ async function deleteReview(id){
 }
 
 
-/* Admin login */
+/* =========================
+   ADMIN LOGIN
+========================= */
 
 window.adminLogin =
 async function(){
+
+  /*
+    अगर पहले से authorized admin
+    login है तो नया login नहीं।
+  */
+
+  if(
+    auth.currentUser &&
+    auth.currentUser.email ===
+    ADMIN_EMAIL
+  ){
+
+    alert(
+      "Admin already logged in."
+    );
+
+    return;
+
+  }
+
 
   const email =
   prompt(
@@ -1199,7 +1435,11 @@ async function(){
   );
 
 
-  if(!email)return;
+  if(!email){
+
+    return;
+
+  }
 
 
   const password =
@@ -1208,7 +1448,11 @@ async function(){
   );
 
 
-  if(!password)return;
+  if(!password){
+
+    return;
+
+  }
 
 
   try{
@@ -1216,7 +1460,7 @@ async function(){
     const result =
     await signInWithEmailAndPassword(
       auth,
-      email,
+      email.trim(),
       password
     );
 
@@ -1252,7 +1496,7 @@ async function(){
   }catch(error){
 
     console.error(
-      "Login error:",
+      "LOGIN ERROR:",
       error
     );
 
@@ -1266,7 +1510,44 @@ async function(){
 };
 
 
-/* Auth state */
+/* =========================
+   ADMIN LOGOUT
+========================= */
+
+window.adminLogout =
+async function(){
+
+  try{
+
+    await signOut(auth);
+
+    adminMode=false;
+
+    document.body.classList.remove(
+      "admin-mode"
+    );
+
+
+    alert(
+      "Admin logout ho gaya."
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "LOGOUT ERROR:",
+      error
+    );
+
+  }
+
+};
+
+
+/* =========================
+   AUTH STATE
+========================= */
 
 onAuthStateChanged(
   auth,
