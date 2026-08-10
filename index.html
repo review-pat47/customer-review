@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="firebase-version" content="6">
 
 <title>Customer Reviews</title>
 
@@ -336,6 +335,16 @@ body{
   color:#777;
 }
 
+.offline-note{
+  padding:10px;
+  margin:10px 0 20px;
+  border-radius:10px;
+  background:#fff8e1;
+  color:#795548;
+  text-align:center;
+  font-size:14px;
+}
+
 @media(max-width:500px){
 
   .score{
@@ -369,7 +378,6 @@ body{
     </a>
   </div>
 
-
   <section class="summary">
 
     <div class="score">4.6</div>
@@ -381,7 +389,6 @@ body{
       id="reviewCount">
       (2,529 reviews)
     </div>
-
 
     <div class="bars">
 
@@ -424,6 +431,7 @@ body{
 
   </section>
 
+  <div id="offlineNote"></div>
 
   <div id="reviews-container">
 
@@ -435,29 +443,23 @@ body{
 
 </main>
 
-
 <button
   class="admin"
-  id="adminButton"
   onclick="adminLogin()">
   Admin Login
 </button>
 
-
 <button
   class="logout"
-  id="logoutButton"
   onclick="adminLogout()">
   Admin Logout
 </button>
-
 
 <button
   class="add"
   onclick="openModal()">
   ＋ Add Your Review
 </button>
-
 
 <div
   class="modal-overlay"
@@ -471,7 +473,6 @@ body{
       id="status"
       class="status">
     </div>
-
 
     <form id="reviewForm">
 
@@ -490,7 +491,6 @@ body{
 
       </div>
 
-
       <div class="form-group">
 
         <label for="userRating">
@@ -501,30 +501,15 @@ body{
           id="userRating"
           required>
 
-          <option value="5">
-            ★★★★★ (5 Stars)
-          </option>
-
-          <option value="4">
-            ★★★★☆ (4 Stars)
-          </option>
-
-          <option value="3">
-            ★★★☆☆ (3 Stars)
-          </option>
-
-          <option value="2">
-            ★★☆☆☆ (2 Stars)
-          </option>
-
-          <option value="1">
-            ★☆☆☆☆ (1 Star)
-          </option>
+          <option value="5">★★★★★ (5 Stars)</option>
+          <option value="4">★★★★☆ (4 Stars)</option>
+          <option value="3">★★★☆☆ (3 Stars)</option>
+          <option value="2">★★☆☆☆ (2 Stars)</option>
+          <option value="1">★☆☆☆☆ (1 Star)</option>
 
         </select>
 
       </div>
-
 
       <div class="form-group">
 
@@ -539,7 +524,6 @@ body{
 
       </div>
 
-
       <div class="form-group">
 
         <label for="userComment">
@@ -553,7 +537,6 @@ body{
           required></textarea>
 
       </div>
-
 
       <div class="modal-actions">
 
@@ -587,18 +570,19 @@ import {
 } from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-
 import {
-  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentSingleTabManager,
   collection,
   getDocs,
+  getDocsFromCache,
   addDoc,
   deleteDoc,
   doc,
   serverTimestamp
 } from
 "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
 
 import {
   getAuth,
@@ -654,8 +638,27 @@ const ADMIN_EMAIL =
 const app =
 initializeApp(firebaseConfig);
 
+
+/*
+  IMPORTANT:
+  Browser ke andar Firestore ka
+  persistent offline cache enable.
+*/
+
 const db =
-getFirestore(app);
+initializeFirestore(
+  app,
+  {
+    localCache:
+      persistentLocalCache(
+        {
+          tabManager:
+            persistentSingleTabManager()
+        }
+      )
+  }
+);
+
 
 const auth =
 getAuth(app);
@@ -697,7 +700,7 @@ fill="#7b8790"/>
 
 
 /* =========================
-   OPEN MODAL
+   MODAL
 ========================= */
 
 window.openModal=function(){
@@ -708,10 +711,6 @@ window.openModal=function(){
 
 };
 
-
-/* =========================
-   CLOSE MODAL
-========================= */
 
 window.closeModal=function(){
 
@@ -731,7 +730,7 @@ window.closeModal=function(){
 
 
 /* =========================
-   STATUS MESSAGE
+   STATUS
 ========================= */
 
 function statusMessage(
@@ -764,7 +763,39 @@ function statusMessage(
 
 
 /* =========================
-   CREATE REVIEW ELEMENT
+   OFFLINE MESSAGE
+========================= */
+
+function showOfflineMessage(
+  message
+){
+
+  const box =
+  document.getElementById(
+    "offlineNote"
+  );
+
+  box.innerHTML =
+  `
+  <div class="offline-note">
+    ${message}
+  </div>
+  `;
+
+}
+
+
+function clearOfflineMessage(){
+
+  document.getElementById(
+    "offlineNote"
+  ).innerHTML="";
+
+}
+
+
+/* =========================
+   CREATE REVIEW
 ========================= */
 
 function createReview(
@@ -890,6 +921,110 @@ function createReview(
 
 
 /* =========================
+   RENDER REVIEWS
+========================= */
+
+function renderReviews(
+  snapshot
+){
+
+  const container =
+  document.getElementById(
+    "reviews-container"
+  );
+
+  container.innerHTML="";
+
+
+  if(snapshot.empty){
+
+    container.innerHTML =
+    `
+    <div class="empty">
+      No reviews found.
+    </div>
+    `;
+
+    return;
+
+  }
+
+
+  const reviews=[];
+
+
+  snapshot.forEach(
+    function(item){
+
+      reviews.push({
+
+        id:item.id,
+
+        data:item.data()
+
+      });
+
+    }
+  );
+
+
+  reviews.sort(
+    function(a,b){
+
+      const aTime =
+      a.data.createdAt &&
+      typeof a.data.createdAt.toMillis ===
+      "function"
+      ?
+      a.data.createdAt.toMillis()
+      :
+      0;
+
+
+      const bTime =
+      b.data.createdAt &&
+      typeof b.data.createdAt.toMillis ===
+      "function"
+      ?
+      b.data.createdAt.toMillis()
+      :
+      0;
+
+
+      return bTime-aTime;
+
+    }
+  );
+
+
+  reviews.forEach(
+    function(item){
+
+      container.appendChild(
+        createReview(
+          item.id,
+          item.data
+        )
+      );
+
+    }
+  );
+
+
+  document.getElementById(
+    "reviewCount"
+  ).textContent =
+  "(" +
+  (
+    2529 +
+    reviews.length
+  ).toLocaleString() +
+  " reviews)";
+
+}
+
+
+/* =========================
    LOAD REVIEWS
 ========================= */
 
@@ -902,160 +1037,102 @@ async function loadReviews(){
 
 
   container.innerHTML =
-  '<div class="loading">Reviews loading...</div>';
+  `
+  <div class="loading">
+    Reviews loading...
+  </div>
+  `;
+
+
+  clearOfflineMessage();
+
+
+  /*
+    STEP 1:
+    Pehle cache se reviews turant
+    dikhane ki koshish.
+  */
+
+  let cacheLoaded=false;
 
 
   try{
 
+    const cachedSnapshot =
+    await getDocsFromCache(
+      reviewsRef
+    );
+
+
+    if(!cachedSnapshot.empty){
+
+      renderReviews(
+        cachedSnapshot
+      );
+
+      cacheLoaded=true;
+
+    }
+
+  }catch(cacheError){
+
+    console.log(
+      "No cached reviews:",
+      cacheError
+    );
+
+  }
+
+
+  /*
+    STEP 2:
+    Internet available ho to
+    Firebase se latest reviews lao.
+  */
+
+  try{
+
+    const serverSnapshot =
+    await getDocs(
+      reviewsRef
+    );
+
+
+    renderReviews(
+      serverSnapshot
+    );
+
+
+    clearOfflineMessage();
+
+
+  }catch(serverError){
+
+    console.error(
+      "Firebase server error:",
+      serverError
+    );
+
+
     /*
-      Firebase response के लिए
-      maximum 10 seconds wait.
+      Agar cache already screen par
+      aa chuka hai, to usko hatao mat.
     */
 
-    const snapshot =
-    await Promise.race([
+    if(cacheLoaded){
 
-      getDocs(reviewsRef),
-
-      new Promise(
-        function(_,reject){
-
-          setTimeout(
-            function(){
-
-              reject(
-                new Error(
-                  "Firebase connection timeout"
-                )
-              );
-
-            },
-            10000
-          );
-
-        }
-      )
-
-    ]);
-
-
-    container.innerHTML="";
-
-
-    if(snapshot.empty){
-
-      container.innerHTML =
-      `
-      <div class="empty">
-        No reviews found.
-      </div>
-      `;
-
-      document.getElementById(
-        "reviewCount"
-      ).textContent=
-      "(2,529 reviews)";
+      showOfflineMessage(
+        "Internet/Firebase unavailable. Cached reviews dikh rahe hain."
+      );
 
       return;
 
     }
 
 
-    const reviews=[];
-
-
-    snapshot.forEach(
-      function(item){
-
-        reviews.push({
-
-          id:item.id,
-
-          data:item.data()
-
-        });
-
-      }
-    );
-
-
     /*
-      जिन reviews में createdAt है
-      वे ऊपर आएंगे।
-
-      पुराने reviews जिनमें
-      createdAt नहीं है,
-      वे भी दिखेंगे।
+      Cache bhi nahi hai.
     */
-
-    reviews.sort(
-      function(a,b){
-
-        const aTime =
-        a.data.createdAt &&
-        typeof a.data.createdAt.toMillis ===
-        "function"
-        ?
-        a.data.createdAt.toMillis()
-        :
-        0;
-
-
-        const bTime =
-        b.data.createdAt &&
-        typeof b.data.createdAt.toMillis ===
-        "function"
-        ?
-        b.data.createdAt.toMillis()
-        :
-        0;
-
-
-        return bTime-aTime;
-
-      }
-    );
-
-
-    /*
-      सारे reviews screen पर डालना
-    */
-
-    reviews.forEach(
-      function(item){
-
-        container.appendChild(
-
-          createReview(
-            item.id,
-            item.data
-          )
-
-        );
-
-      }
-    );
-
-
-    document.getElementById(
-      "reviewCount"
-    ).textContent =
-
-    "(" +
-    (
-      2529 +
-      reviews.length
-    ).toLocaleString() +
-    " reviews)";
-
-
-  }catch(error){
-
-    console.error(
-      "FIREBASE ERROR:",
-      error
-    );
-
 
     container.innerHTML =
     `
@@ -1065,37 +1142,17 @@ async function loadReviews(){
 
       <br><br>
 
-      <b>${escapeHtml(error.message)}</b>
+      Internet connection check karein.
 
       <br><br>
 
-      Firebase connection check karein.
+      Pehli baar reviews load karne ke
+      liye internet zaroori hai.
 
     </div>
     `;
 
   }
-
-}
-
-
-/* =========================
-   ESCAPE ERROR TEXT
-========================= */
-
-function escapeHtml(text){
-
-  return String(text)
-
-    .replaceAll("&","&amp;")
-
-    .replaceAll("<","&lt;")
-
-    .replaceAll(">","&gt;")
-
-    .replaceAll('"',"&quot;")
-
-    .replaceAll("'","&#039;");
 
 }
 
@@ -1190,11 +1247,6 @@ document.getElementById(
       let photo="";
 
 
-      /*
-        Profile photo ko Data URL में
-        save किया जा रहा है।
-      */
-
       if(file){
 
         if(
@@ -1249,10 +1301,6 @@ document.getElementById(
       }
 
 
-      /*
-        Firebase Firestore में review save
-      */
-
       await addDoc(
         reviewsRef,
         {
@@ -1277,10 +1325,6 @@ document.getElementById(
         true
       );
 
-
-      /*
-        नया review तुरंत reload
-      */
 
       await loadReviews();
 
@@ -1325,15 +1369,7 @@ document.getElementById(
 
 async function deleteReview(id){
 
-  /*
-    Client-side check.
-    असली security Firebase Rules
-    से होगी।
-  */
-
-  if(
-    !auth.currentUser
-  ){
+  if(!auth.currentUser){
 
     alert(
       "Admin login required."
@@ -1408,11 +1444,6 @@ async function deleteReview(id){
 
 window.adminLogin =
 async function(){
-
-  /*
-    अगर पहले से authorized admin
-    login है तो नया login नहीं।
-  */
 
   if(
     auth.currentUser &&
@@ -1562,6 +1593,32 @@ onAuthStateChanged(
     document.body.classList.toggle(
       "admin-mode",
       adminMode
+    );
+
+  }
+);
+
+
+/* =========================
+   INTERNET STATUS
+========================= */
+
+window.addEventListener(
+  "online",
+  function(){
+
+    loadReviews();
+
+  }
+);
+
+
+window.addEventListener(
+  "offline",
+  function(){
+
+    showOfflineMessage(
+      "Internet band hai. Agar reviews pehle load hue hain to cached reviews dikhte rahenge."
     );
 
   }
